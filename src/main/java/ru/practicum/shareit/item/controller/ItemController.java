@@ -44,10 +44,7 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto createItem(
-            @RequestHeader("X-Sharer-User-Id") int ownerId,
-            @RequestBody @Valid ItemDto dto
-    ) {
+    public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") int ownerId, @RequestBody @Valid ItemDto dto) {
         log.info("Пришел POST-запрос /items с телом={}", dto);
         userService.findById(ownerId);
         ItemDto savedDto = itemService.create(dto, ownerId);
