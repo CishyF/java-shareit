@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EntityAlreadyExistsException;
 import ru.practicum.shareit.exception.EntityDoesNotExistException;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.entity.User;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.util.UserMapper;
 import ru.practicum.shareit.user.util.UserPatchUpdater;

@@ -2,7 +2,7 @@ package ru.practicum.shareit.item.util;
 
 import org.mapstruct.*;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.entity.Item;
+import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 import java.util.stream.Collectors;
