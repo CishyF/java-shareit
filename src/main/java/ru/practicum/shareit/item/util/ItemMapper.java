@@ -7,7 +7,6 @@ import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.user.util.UserMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * The {@code ItemMapper} class converts {@code ItemDtoRequest} to {@code Item} and {@code Item} tp {@code ItemDtoResponse}
  */
-@Mapper(componentModel = "spring", uses=UserMapper.class)
+@Mapper(componentModel = "spring")
 public abstract class ItemMapper {
 
     @Autowired
