@@ -25,8 +25,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto create(ItemDto itemDto, int ownerId) {
-        Item item = itemMapper.dtoToItem(itemDto);
-        item.setOwnerId(ownerId);
+        Item item = itemMapper.dtoToItem(itemDto, ownerId);
         Item savedItem = itemRepository.save(item);
         return itemMapper.itemToDto(savedItem);
     }
@@ -71,6 +70,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private boolean isOwner(Item item, int ownerId) {
-        return item.getOwnerId().equals(ownerId);
+        return item.getOwner().getId().equals(ownerId);
     }
 }

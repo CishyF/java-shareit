@@ -12,8 +12,6 @@ import ru.practicum.shareit.item.model.Item;
 public interface ItemPatchUpdater {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "ownerId", ignore = true)
-    @Mapping(target = "requestId", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateItem(@MappingTarget Item item, ItemDto dto);
 }

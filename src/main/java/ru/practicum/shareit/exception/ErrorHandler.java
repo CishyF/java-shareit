@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ErrorHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(BindException.class)
+    @ExceptionHandler({BindException.class, IllegalArgumentException.class})
     public ErrorResponse sendBadRequest(Exception e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .message(e.getMessage())
