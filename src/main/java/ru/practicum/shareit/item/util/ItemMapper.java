@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.shareit.item.dto.ItemDtoRequest;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.dto.UserDtoResponse;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.util.UserMapper;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * The {@code ItemMapper} class converts {@code ItemDtoRequest} to {@code Item} and vice versa
+ * The {@code ItemMapper} class converts {@code ItemDtoRequest} to {@code Item} and {@code Item} tp {@code ItemDtoResponse}
  */
 @Mapper(componentModel = "spring", uses=UserMapper.class)
 public abstract class ItemMapper {
@@ -30,8 +31,7 @@ public abstract class ItemMapper {
         if (ownerId == null || ownerId < 1) {
             throw new IllegalArgumentException("Попытка получения вещи у несуществующего пользователя");
         }
-        UserMapper userMapper = Mappers.getMapper(UserMapper.class);
-        User owner = userMapper.dtoToUser(userService.findById(ownerId));
+        User owner = userService.findById(ownerId);
         Item item = dtoRequestToItem(dto);
         item.setOwner(owner);
         return item;

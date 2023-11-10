@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EntityAlreadyExistsException;
 import ru.practicum.shareit.exception.EntityDoesNotExistException;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserDtoRequest;
+import ru.practicum.shareit.user.dto.UserDtoResponse;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.util.UserMapper;
@@ -21,27 +22,24 @@ public class UserServiceImpl implements UserService {
     private final UserPatchUpdater userPatchUpdater;
 
     @Override
-    public UserDto create(UserDto userDto) {
-        User user = userMapper.dtoToUser(userDto);
-        User savedUser = userRepository.save(user);
-        return userMapper.userToDto(savedUser);
+    public User create(UserDtoRequest userDto) {
+        User user = userMapper.dtoRequestToUser(userDto);
+        return userRepository.save(user);
     }
 
     @Override
-    public List<UserDto> findAll() {
-        List<User> users = userRepository.findAll();
-        return userMapper.usersToDtos(users);
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 
     @Override
-    public UserDto findById(int id) {
-        User user = userRepository.findById(id)
+    public User findById(int id) {
+        return userRepository.findById(id)
                 .orElseThrow(() -> new EntityDoesNotExistException("Попытка получения несуществующего пользователя"));
-        return userMapper.userToDto(user);
     }
 
     @Override
-    public UserDto update(int id, UserDto dto) {
+    public User update(int id, UserDtoRequest dto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityDoesNotExistException("Попытка обновить несуществующего пользователя"));
         String email = dto.getEmail();
@@ -49,7 +47,7 @@ public class UserServiceImpl implements UserService {
             throw new EntityAlreadyExistsException("Попытка присвоить пользователю уже использованную почту");
         }
         userPatchUpdater.updateUser(user, dto);
-        return userMapper.userToDto(user);
+        return user;
     }
 
     @Override
@@ -59,8 +57,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isEmailExists(String email) {
-        return findAll().stream()
-                .map(UserDto::getEmail)
+        return userRepository.findAll().stream()
+                .map(User::getEmail)
                 .anyMatch(email::equals);
     }
 }

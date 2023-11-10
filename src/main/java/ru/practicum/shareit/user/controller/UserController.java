@@ -3,8 +3,10 @@ package ru.practicum.shareit.user.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserDtoRequest;
+import ru.practicum.shareit.user.dto.UserDtoResponse;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.util.UserMapper;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -16,38 +18,39 @@ import java.util.Collection;
 public class UserController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @GetMapping
-    public Collection<UserDto> getAllUsers() {
+    public Collection<UserDtoResponse> getAllUsers() {
         log.info("Пришел GET-запрос /users без тела");
-        Collection<UserDto> userDtos = userService.findAll();
+        Collection<UserDtoResponse> userDtos = userMapper.usersToDtoResponses(userService.findAll());
         log.info("Ответ на GET-запрос /users с телом={}", userDtos);
         return userDtos;
     }
 
     @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable int id) {
+    public UserDtoResponse getUserById(@PathVariable int id) {
         log.info("Пришел GET-запрос /users/{id={}} без тела", id);
-        UserDto userDto = userService.findById(id);
+        UserDtoResponse userDto = userMapper.userToDtoResponse(userService.findById(id));
         log.info("Ответ на GET-запрос /users/{id={}} с телом={}", id, userDto);
         return userDto;
     }
 
     @PostMapping
-    public UserDto createUser(@RequestBody @Valid UserDto userDto) {
+    public UserDtoResponse createUser(@RequestBody @Valid UserDtoRequest userDto) {
         log.info("Пришел POST-запрос /users с телом={}", userDto);
-        UserDto createdUserDto = userService.create(userDto);
+        UserDtoResponse createdUserDto = userMapper.userToDtoResponse(userService.create(userDto));
         log.info("Ответ на POST-запрос /users с телом={}", createdUserDto);
         return createdUserDto;
     }
 
     @PatchMapping("/{id}")
-    public UserDto patchUser(
+    public UserDtoResponse patchUser(
             @PathVariable int id,
-            @RequestBody UserDto dto
+            @RequestBody UserDtoRequest dto
     ) {
         log.info("Пришел PATCH-запрос /users/{id={}} с телом={}", id, dto);
-        UserDto updatedUserDto = userService.update(id, dto);
+        UserDtoResponse updatedUserDto = userMapper.userToDtoResponse(userService.update(id, dto));
         log.info("Ответ на PATCH-запрос /users/{id={}} с телом={}", id, updatedUserDto);
         return updatedUserDto;
     }

@@ -2,18 +2,19 @@ package ru.practicum.shareit.item.service;
 
 import ru.practicum.shareit.item.dto.ItemDtoRequest;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
+import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
 public interface ItemService {
 
-    ItemDtoResponse create(ItemDtoRequest itemDto, int ownerId);
+    Item create(ItemDtoRequest itemDto, int ownerId);
 
-    List<ItemDtoResponse> findAllItemsOfUser(int ownerId);
+    List<Item> findAllItemsOfUser(int ownerId);
 
-    ItemDtoResponse findById(int id);
+    Item findById(int id);
 
-    List<ItemDtoResponse> findItemsContainingText(String text);
+    List<Item> findItemsContainingText(String text);
 
-    ItemDtoResponse update(int ownerId, int id, ItemDtoRequest dto);
+    Item update(int ownerId, int id, ItemDtoRequest dto);
 }

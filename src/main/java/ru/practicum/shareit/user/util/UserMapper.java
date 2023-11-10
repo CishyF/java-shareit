@@ -1,23 +1,24 @@
 package ru.practicum.shareit.user.util;
 
 import org.mapstruct.*;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserDtoRequest;
+import ru.practicum.shareit.user.dto.UserDtoResponse;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * The {@code UserMapper} class converts {@code UserDto} to {@code User} and vice versa
+ * The {@code UserMapper} class converts {@code UserDtoRequest} to {@code User} and {@code User} to {@code UserDtoResponse}
  */
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    UserDto userToDto(User user);
+    UserDtoResponse userToDtoResponse(User user);
 
-    User dtoToUser(UserDto dto);
+    User dtoRequestToUser(UserDtoRequest dto);
 
-    default List<UserDto> usersToDtos(List<User> users) {
-        return users.stream().map(this::userToDto).collect(Collectors.toList());
+    default List<UserDtoResponse> usersToDtoResponses(List<User> users) {
+        return users.stream().map(this::userToDtoResponse).collect(Collectors.toList());
     }
 }
