@@ -57,8 +57,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isEmailExists(String email) {
-        return userRepository.findAll().stream()
-                .map(User::getEmail)
+        return userRepository.findAllEmails().stream()
                 .anyMatch(email::equals);
     }
 }

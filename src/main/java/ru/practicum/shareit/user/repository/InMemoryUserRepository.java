@@ -11,6 +11,7 @@ public class InMemoryUserRepository implements UserRepository {
 
     private int idCounter = 0;
     private final Map<Integer, User> users = new HashMap<>();
+    private final Set<String> emails = new HashSet<>();
 
     @Override
     public User save(User user) {
@@ -20,6 +21,7 @@ public class InMemoryUserRepository implements UserRepository {
         final int generatedUserId = ++idCounter;
         user.setId(generatedUserId);
         users.put(generatedUserId, user);
+        emails.add(user.getEmail());
         return user;
     }
 
@@ -34,7 +36,13 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
+    public List<String> findAllEmails() {
+        return new ArrayList<>(emails);
+    }
+
+    @Override
     public void delete(int id) {
+        findById(id).ifPresent(value -> emails.remove(value.getEmail()));
         users.remove(id);
     }
 }
