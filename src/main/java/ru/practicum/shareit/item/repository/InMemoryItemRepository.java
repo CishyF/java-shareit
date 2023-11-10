@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class InMemoryItemRepository implements ItemRepository {
 
     private int idCounter = 0;
-    private final Map<Integer, Item> itemById = new HashMap<>();
+    private final Map<Integer, Item> items = new HashMap<>();
 
     @Override
     public Item save(Item item) {
@@ -20,18 +20,18 @@ public class InMemoryItemRepository implements ItemRepository {
         }
         final int generatedItemId = ++idCounter;
         item.setId(generatedItemId);
-        itemById.put(generatedItemId, item);
+        items.put(generatedItemId, item);
         return item;
     }
 
     @Override
     public Optional<Item> findById(int id) {
-        return Optional.ofNullable(itemById.get(id));
+        return Optional.ofNullable(items.get(id));
     }
 
     @Override
     public List<Item> findAll() {
-        return new ArrayList<>(itemById.values());
+        return new ArrayList<>(items.values());
     }
 
     @Override
