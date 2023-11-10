@@ -26,6 +26,14 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
+    public void updateEmail(String email, String newEmail) {
+        if (emails.contains(email)) {
+            emails.remove(email);
+            emails.add(newEmail);
+        }
+    }
+
+    @Override
     public Optional<User> findById(int id) {
         return Optional.ofNullable(users.get(id));
     }
@@ -42,7 +50,7 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public void delete(int id) {
-        findById(id).ifPresent(value -> emails.remove(value.getEmail()));
+        findById(id).ifPresent(user -> emails.remove(user.getEmail()));
         users.remove(id);
     }
 }

@@ -42,10 +42,12 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityDoesNotExistException("Попытка обновить несуществующего пользователя"));
         String email = dto.getEmail();
-        if (email != null && !user.getEmail().equals(email) && isEmailExists(email)) {
+        String userEmail = user.getEmail();
+        if (email != null && !userEmail.equals(email) && isEmailExists(email)) {
             throw new EntityAlreadyExistsException("Попытка присвоить пользователю уже использованную почту");
         }
         userPatchUpdater.updateUser(user, dto);
+        userRepository.updateEmail(userEmail, email);
         return user;
     }
 
