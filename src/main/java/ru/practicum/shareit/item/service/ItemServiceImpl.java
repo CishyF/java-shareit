@@ -5,7 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.AccessException;
 import ru.practicum.shareit.exception.EntityDoesNotExistException;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoRequest;
+import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.util.ItemMapper;
@@ -24,27 +25,27 @@ public class ItemServiceImpl implements ItemService {
     private final ItemPatchUpdater itemPatchUpdater;
 
     @Override
-    public ItemDto create(ItemDto itemDto, int ownerId) {
-        Item item = itemMapper.dtoToItem(itemDto, ownerId);
+    public ItemDtoResponse create(ItemDtoRequest itemDto, int ownerId) {
+        Item item = itemMapper.dtoRequestToItem(itemDto, ownerId);
         Item savedItem = itemRepository.save(item);
-        return itemMapper.itemToDto(savedItem);
+        return itemMapper.itemToDtoResponse(savedItem);
     }
 
     @Override
-    public List<ItemDto> findAllItemsOfUser(int ownerId) {
+    public List<ItemDtoResponse> findAllItemsOfUser(int ownerId) {
         List<Item> itemsOfUser = itemRepository.findAllItemsOfUser(ownerId);
-        return itemMapper.itemsToDtos(itemsOfUser);
+        return itemMapper.itemsToDtoResponses(itemsOfUser);
     }
 
     @Override
-    public ItemDto findById(int id) {
+    public ItemDtoResponse findById(int id) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new EntityDoesNotExistException("Попытка получить несуществующий предмет"));
-        return itemMapper.itemToDto(item);
+        return itemMapper.itemToDtoResponse(item);
     }
 
     @Override
-    public List<ItemDto> findItemsContainingText(String text) {
+    public List<ItemDtoResponse> findItemsContainingText(String text) {
         if (text == null || text.isBlank()) {
             return Collections.emptyList();
         }
@@ -55,18 +56,18 @@ public class ItemServiceImpl implements ItemService {
                                 item.getAvailable()
                 )
                 .collect(Collectors.toList());
-        return itemMapper.itemsToDtos(itemsContainingText);
+        return itemMapper.itemsToDtoResponses(itemsContainingText);
     }
 
     @Override
-    public ItemDto update(int ownerId, int id, ItemDto dto) {
+    public ItemDtoResponse update(int ownerId, int id, ItemDtoRequest dto) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new EntityDoesNotExistException("Попытка обновить несуществующий предмет"));
         if (!isOwner(item, ownerId)) {
             throw new AccessException("Попытка обновить предмет, принадлежащий другому пользователю");
         }
         itemPatchUpdater.updateItem(item, dto);
-        return itemMapper.itemToDto(item);
+        return itemMapper.itemToDtoResponse(item);
     }
 
     private boolean isOwner(Item item, int ownerId) {
