@@ -3,8 +3,12 @@ package ru.practicum.shareit.item.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
+import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
+import ru.practicum.shareit.item.comment.util.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDtoRequest;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
+import ru.practicum.shareit.item.dto.LongItemDtoResponse;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.util.ItemMapper;
 import ru.practicum.shareit.user.service.UserService;
@@ -21,21 +25,23 @@ public class ItemController {
     private final ItemService itemService;
     private final ItemMapper itemMapper;
     private final UserService userService;
+    private final CommentMapper commentMapper;
 
     @GetMapping
-    public Collection<ItemDtoResponse> getAllItemsOfUser(@RequestHeader("X-Sharer-User-Id") int ownerId) {
+    public Collection<LongItemDtoResponse> getItemsOfUser(@RequestHeader("X-Sharer-User-Id") int ownerId) {
         log.info("Пришел GET-запрос /items без тела");
-        Collection<ItemDtoResponse> itemsDto = itemMapper.itemsToDtoResponses(
-                itemService.findAllItemsOfUser(ownerId)
-        );
+        Collection<LongItemDtoResponse> itemsDto = itemService.findLongItemDtosOfUser(ownerId);
         log.info("Ответ на GET-запрос /items с телом={}", itemsDto);
         return itemsDto;
     }
 
     @GetMapping("/{id}")
-    public ItemDtoResponse getItemById(@PathVariable int id) {
+    public LongItemDtoResponse getItemById(
+            @RequestHeader("X-Sharer-User-Id") int userId,
+            @PathVariable int id
+    ) {
         log.info("Пришел GET-запрос /items/{id={}} без тела", id);
-        ItemDtoResponse itemDto = itemMapper.itemToDtoResponse(itemService.findById(id));
+        LongItemDtoResponse itemDto = itemService.findLongItemDtoById(id, userId);
         log.info("Ответ на GET-запрос /items/{id={}} с телом={}", id, itemDto);
         return itemDto;
     }
@@ -66,8 +72,20 @@ public class ItemController {
             @RequestBody ItemDtoRequest dto
     ) {
         log.info("Пришел PATCH-запрос /items/{id={}} с телом={}", id, dto);
-        ItemDtoResponse updatedDto = itemMapper.itemToDtoResponse(itemService.update(ownerId, id, dto));
+        ItemDtoResponse updatedDto = itemMapper.itemToDtoResponse(itemService.update(dto, id, ownerId));
         log.info("Ответ на PATCH-запрос /items/{id={}} с телом={}", id, updatedDto);
         return updatedDto;
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDtoResponse createComment(
+            @RequestHeader("X-Sharer-User-Id") int authorId,
+            @PathVariable int itemId,
+            @RequestBody @Valid CommentDtoRequest dto
+    ) {
+        log.info("Пришел POST-запрос /items/{itemId={}}/comment с телом={}", itemId, dto);
+        CommentDtoResponse savedDto = commentMapper.commentToDtoResponse(itemService.createComment(dto, itemId, authorId));
+        log.info("Ответ на POST-запрос /items/{itemId={}}/comment с телом={}", itemId, savedDto);
+        return savedDto;
     }
 }
