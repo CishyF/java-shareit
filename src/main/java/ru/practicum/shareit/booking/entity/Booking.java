@@ -9,7 +9,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "booking")
-@Getter @Setter @ToString
+@Getter
+@Setter
+@ToString
 public class Booking {
 
     @Id

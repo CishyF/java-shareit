@@ -9,7 +9,9 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "item")
-@Getter @Setter @ToString
+@Getter
+@Setter
+@ToString
 public class Item {
 
     @Id
