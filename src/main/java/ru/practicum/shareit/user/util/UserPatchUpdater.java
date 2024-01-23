@@ -2,7 +2,7 @@ package ru.practicum.shareit.user.util;
 
 import org.mapstruct.*;
 import ru.practicum.shareit.user.dto.UserDtoRequest;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.entity.User;
 
 /**
  * The {@code UserPatchUpdater} class updates field(-s) of got {@code User} instance
