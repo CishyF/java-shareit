@@ -1,7 +1,6 @@
 package ru.practicum.shareit.user.dto;
 
 import lombok.Data;
-import ru.practicum.shareit.user.util.validation.NotDuplicatedEmail;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -14,6 +13,5 @@ public class UserDtoRequest {
     private String name;
     @Email
     @NotNull
-    @NotDuplicatedEmail
     private String email;
 }
