@@ -7,6 +7,6 @@ import lombok.Data;
 @Builder
 public class ErrorResponse {
 
-    private String message;
+    private String error;
     private Class<? extends Throwable> cause;
 }
