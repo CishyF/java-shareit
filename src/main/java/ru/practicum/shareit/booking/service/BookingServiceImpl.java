@@ -117,8 +117,7 @@ public class BookingServiceImpl implements BookingService {
         } else {
             booking.setStatus(BookingStatus.REJECTED);
         }
-        bookingRepository.save(booking);
-        return booking;
+        return bookingRepository.save(booking);
     }
 
     private void checkUpdatePermissions(Booking booking, int userId) {
