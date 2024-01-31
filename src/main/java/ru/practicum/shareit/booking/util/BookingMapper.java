@@ -2,18 +2,14 @@ package ru.practicum.shareit.booking.util;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.dto.ShortBookingDtoResponse;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.entity.BookingStatus;
-import ru.practicum.shareit.exception.EntityDoesNotExistException;
 import ru.practicum.shareit.item.entity.Item;
-import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.util.ItemMapper;
 import ru.practicum.shareit.user.entity.User;
-import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.util.UserMapper;
 
 import java.time.LocalDateTime;
@@ -25,26 +21,17 @@ import java.util.stream.Collectors;
  * and {@code Booking} to any type of Booking Request DTOs
  */
 @Mapper(componentModel = "spring", uses = {UserMapper.class, ItemMapper.class})
-public abstract class BookingMapper {
+public interface BookingMapper {
 
-    @Autowired
-    protected UserRepository userRepository;
-    @Autowired
-    protected ItemRepository itemRepository;
-
-    public abstract BookingDtoResponse bookingToDtoResponse(Booking booking);
+    BookingDtoResponse bookingToDtoResponse(Booking booking);
 
     @Mapping(target = "bookerId", source = "booking.booker.id")
-    public abstract ShortBookingDtoResponse bookingToShortDtoResponse(Booking booking);
+    ShortBookingDtoResponse bookingToShortDtoResponse(Booking booking);
 
-    protected abstract Booking dtoRequestToBooking(BookingDtoRequest dto);
+    Booking dtoRequestToBooking(BookingDtoRequest dto);
 
-    public Booking dtoRequestToBooking(BookingDtoRequest dto, int itemId, int bookerId) {
+    default Booking dtoRequestToBooking(BookingDtoRequest dto, Item item, User booker) {
         validateDatesOfDto(dto);
-        User booker = userRepository.findById(bookerId)
-                .orElseThrow(() -> new EntityDoesNotExistException("Попытка использования бронирования несуществующего пользователя"));
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new EntityDoesNotExistException("Попытка использования бронирования несуществующей вещи"));
         Booking booking = dtoRequestToBooking(dto);
         booking.setItem(item);
         booking.setBooker(booker);
@@ -66,7 +53,7 @@ public abstract class BookingMapper {
         }
     }
 
-    public List<BookingDtoResponse> bookingsToDtoResponses(List<Booking> bookings) {
+    default List<BookingDtoResponse> bookingsToDtoResponses(List<Booking> bookings) {
         return bookings.stream().map(this::bookingToDtoResponse).collect(Collectors.toList());
     }
 }

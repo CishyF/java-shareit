@@ -14,6 +14,7 @@ import ru.practicum.shareit.exception.AccessException;
 import ru.practicum.shareit.exception.EntityDoesNotExistException;
 import ru.practicum.shareit.exception.EntityIsNotAvailableException;
 import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
+import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
 import ru.practicum.shareit.item.comment.entity.Comment;
 import ru.practicum.shareit.item.comment.repository.CommentRepository;
 import ru.practicum.shareit.item.comment.util.CommentMapper;
@@ -46,7 +47,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item create(ItemDtoRequest itemDto, int ownerId) {
-        Item item = itemMapper.dtoRequestToItem(itemDto, ownerId);
+        User owner = userService.findById(ownerId);
+        Item item = itemMapper.dtoRequestToItem(itemDto, owner);
         return itemRepository.save(item);
     }
 
@@ -58,8 +60,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<LongItemDtoResponse> findLongItemDtosOfUser(int ownerId) {
-        List<Item> items = findItemsOfUser(ownerId);
-        return items.stream().map(this::makeLongItemDto).collect(Collectors.toList());
+        return findItemsOfUser(ownerId).stream()
+                .map(item -> findLongItemDtoById(item.getId(), ownerId))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -72,13 +75,15 @@ public class ItemServiceImpl implements ItemService {
     public LongItemDtoResponse findLongItemDtoById(int id, int userId) {
         Item item = findById(id);
         int ownerId = item.getOwner().getId();
+        List<Comment> comments = commentRepository.findAllByItem(item);
+        List<CommentDtoResponse> commentDtos = commentMapper.commentsToDtoResponses(comments);
         if (ownerId != userId) {
-            return itemMapper.itemToLongDtoResponse(item, null, null);
+            return itemMapper.itemToLongDtoResponse(item, null, null, commentDtos);
         }
-        return makeLongItemDto(item);
+        return makeLongItemDto(item, commentDtos);
     }
 
-    private LongItemDtoResponse makeLongItemDto(Item item) {
+    private LongItemDtoResponse makeLongItemDto(Item item, List<CommentDtoResponse> commentDtos) {
         Pageable pageable = PageRequest.of(0, 1);
 
         Booking lastBooking = bookingRepository.findLastBookingByItem(item, pageable)
@@ -89,7 +94,7 @@ public class ItemServiceImpl implements ItemService {
         ShortBookingDtoResponse lastBookingDto = bookingMapper.bookingToShortDtoResponse(lastBooking);
         ShortBookingDtoResponse nextBookingDto = bookingMapper.bookingToShortDtoResponse(nextBooking);
 
-        return itemMapper.itemToLongDtoResponse(item, lastBookingDto, nextBookingDto);
+        return itemMapper.itemToLongDtoResponse(item, lastBookingDto, nextBookingDto, commentDtos);
     }
 
     @Override
@@ -137,7 +142,7 @@ public class ItemServiceImpl implements ItemService {
             throw new EntityIsNotAvailableException("У данного пользователя нет прав для оставления комментария у этой вещи");
         }
 
-        Comment comment = commentMapper.dtoRequestToComment(dto, itemId, authorId);
+        Comment comment = commentMapper.dtoRequestToComment(dto, item, author);
         return commentRepository.save(comment);
     }
 }

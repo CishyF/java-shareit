@@ -33,7 +33,10 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking create(BookingDtoRequest dto, int bookerId) {
         int itemId = dto.getItemId() == null ? -1 : dto.getItemId();
-        Booking booking = bookingMapper.dtoRequestToBooking(dto, itemId, bookerId);
+
+        User booker = userService.findById(bookerId);
+        Item item = itemService.findById(itemId);
+        Booking booking = bookingMapper.dtoRequestToBooking(dto, item, booker);
 
         int ownerIdOfBookedItem = booking.getItem().getOwner().getId();
         if (ownerIdOfBookedItem == bookerId) {
