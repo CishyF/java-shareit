@@ -1,40 +1,47 @@
 package ru.practicum.shareit.item.util;
 
 import org.mapstruct.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import ru.practicum.shareit.booking.dto.ShortBookingDtoResponse;
+import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
 import ru.practicum.shareit.item.dto.ItemDtoRequest;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.item.dto.LongItemDtoResponse;
+import ru.practicum.shareit.item.entity.Item;
+import ru.practicum.shareit.user.entity.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * The {@code ItemMapper} class converts {@code ItemDtoRequest} to {@code Item} and {@code Item} tp {@code ItemDtoResponse}
+ * The {@code ItemMapper} class converts {@code ItemDtoRequest} to {@code Item} and {@code Item} to any type of Item Request DTOs
  */
 @Mapper(componentModel = "spring")
-public abstract class ItemMapper {
+public interface ItemMapper {
 
-    @Autowired
-    protected UserService userService;
+    ItemDtoResponse itemToDtoResponse(Item item);
 
-    public abstract ItemDtoResponse itemToDtoResponse(Item item);
+    LongItemDtoResponse itemToLongDtoResponse(Item item);
 
-    public abstract Item dtoRequestToItem(ItemDtoRequest dto);
+    default LongItemDtoResponse itemToLongDtoResponse(
+            Item item, ShortBookingDtoResponse lastBooking, ShortBookingDtoResponse nextBooking,
+            List<CommentDtoResponse> commentDtos
+    ) {
+        LongItemDtoResponse dto = itemToLongDtoResponse(item);
+        dto.setLastBooking(lastBooking);
+        dto.setNextBooking(nextBooking);
+        dto.setComments(commentDtos);
+        return dto;
+    }
 
-    public Item dtoRequestToItem(ItemDtoRequest dto, Integer ownerId) {
-        if (ownerId == null || ownerId < 1) {
-            throw new IllegalArgumentException("Попытка получения вещи у несуществующего пользователя");
-        }
-        User owner = userService.findById(ownerId);
+    Item dtoRequestToItem(ItemDtoRequest dto);
+
+    default Item dtoRequestToItem(ItemDtoRequest dto, User owner) {
         Item item = dtoRequestToItem(dto);
         item.setOwner(owner);
         return item;
     }
 
-    public List<ItemDtoResponse> itemsToDtoResponses(List<Item> items) {
+    default List<ItemDtoResponse> itemsToDtoResponses(List<Item> items) {
         return items.stream().map(this::itemToDtoResponse).collect(Collectors.toList());
     }
 }

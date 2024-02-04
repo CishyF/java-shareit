@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EntityAlreadyExistsException;
 import ru.practicum.shareit.exception.EntityDoesNotExistException;
 import ru.practicum.shareit.user.dto.UserDtoRequest;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.util.UserMapper;
 import ru.practicum.shareit.user.util.UserPatchUpdater;
@@ -47,18 +47,19 @@ public class UserServiceImpl implements UserService {
             throw new EntityAlreadyExistsException("Попытка присвоить пользователю уже использованную почту");
         }
         userPatchUpdater.updateUser(user, dto);
-        userRepository.updateEmail(userEmail, email);
+        userRepository.save(user);
         return user;
     }
 
     @Override
     public void delete(int id) {
-        userRepository.delete(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityDoesNotExistException("Попытка удалить несуществующего пользователя"));
+        userRepository.delete(user);
     }
 
     @Override
     public boolean isEmailExists(String email) {
-        return userRepository.findAllEmails().stream()
-                .anyMatch(email::equals);
+        return userRepository.countByEmailEquals(email) != 0;
     }
 }
