@@ -2,7 +2,7 @@ package ru.practicum.shareit.item.util;
 
 import org.mapstruct.*;
 import ru.practicum.shareit.item.dto.ItemDtoRequest;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.entity.Item;
 
 /**
  * The {@code ItemPatchUpdater} class updates field(-s) of got {@code Item} instance

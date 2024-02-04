@@ -1,21 +1,34 @@
 package ru.practicum.shareit.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({BindException.class, IllegalArgumentException.class})
+    @ExceptionHandler({BindException.class, IllegalArgumentException.class, EntityIsNotAvailableException.class})
     public ErrorResponse sendBadRequest(Exception e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .message(e.getMessage())
+                .error(e.getMessage())
+                .cause(e.getClass())
+                .build();
+        log.warn("Обработка исключения с кодом 400 и телом={}", errorResponse);
+        return errorResponse;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ErrorResponse sendUnknownState(RuntimeException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .error("Unknown state: UNSUPPORTED_STATUS")
                 .cause(e.getClass())
                 .build();
         log.warn("Обработка исключения с кодом 400 и телом={}", errorResponse);
@@ -26,7 +39,7 @@ public class ErrorHandler {
     @ExceptionHandler(AccessException.class)
     public ErrorResponse sendForbidden(RuntimeException e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .message(e.getMessage())
+                .error(e.getMessage())
                 .cause(e.getClass())
                 .build();
         log.warn("Обработка исключения с кодом 403 и телом={}", errorResponse);
@@ -34,10 +47,10 @@ public class ErrorHandler {
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(EntityDoesNotExistException.class)
+    @ExceptionHandler({EntityDoesNotExistException.class, BookingByOwnerOfItemException.class})
     public ErrorResponse sendNotFound(RuntimeException e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .message(e.getMessage())
+                .error(e.getMessage())
                 .cause(e.getClass())
                 .build();
         log.warn("Обработка исключения с кодом 404 и телом={}", errorResponse);
@@ -45,10 +58,10 @@ public class ErrorHandler {
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(EntityAlreadyExistsException.class)
+    @ExceptionHandler({EntityAlreadyExistsException.class, DataIntegrityViolationException.class})
     public ErrorResponse sendConflict(RuntimeException e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .message(e.getMessage())
+                .error(e.getMessage())
                 .cause(e.getClass())
                 .build();
         log.warn("Обработка исключения с кодом 409 и телом={}", errorResponse);
@@ -59,7 +72,7 @@ public class ErrorHandler {
     @ExceptionHandler
     public ErrorResponse sendInternalServerError(Throwable t) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .message(t.getMessage())
+                .error(t.getMessage())
                 .cause(t.getClass())
                 .build();
         log.warn("Обработка исключения с кодом 500 и телом={}", errorResponse);

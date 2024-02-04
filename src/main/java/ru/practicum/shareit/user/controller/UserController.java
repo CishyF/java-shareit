@@ -21,7 +21,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @GetMapping
-    public Collection<UserDtoResponse> getAllUsers() {
+    public Collection<UserDtoResponse> getUsers() {
         log.info("Пришел GET-запрос /users без тела");
         Collection<UserDtoResponse> userDtos = userMapper.usersToDtoResponses(userService.findAll());
         log.info("Ответ на GET-запрос /users с телом={}", userDtos);

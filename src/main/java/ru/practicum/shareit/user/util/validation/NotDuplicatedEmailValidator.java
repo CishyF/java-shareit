@@ -7,6 +7,7 @@ import ru.practicum.shareit.user.service.UserService;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+@Deprecated
 @RequiredArgsConstructor
 public class NotDuplicatedEmailValidator implements ConstraintValidator<NotDuplicatedEmail, String> {
 

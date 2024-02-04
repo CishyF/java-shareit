@@ -3,7 +3,7 @@ package ru.practicum.shareit.user.util;
 import org.mapstruct.*;
 import ru.practicum.shareit.user.dto.UserDtoRequest;
 import ru.practicum.shareit.user.dto.UserDtoResponse;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.entity.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
