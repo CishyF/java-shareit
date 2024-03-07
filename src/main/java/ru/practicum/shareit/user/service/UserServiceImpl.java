@@ -47,8 +47,7 @@ public class UserServiceImpl implements UserService {
             throw new EntityAlreadyExistsException("Попытка присвоить пользователю уже использованную почту");
         }
         userPatchUpdater.updateUser(user, dto);
-        userRepository.save(user);
-        return user;
+        return userRepository.save(user);
     }
 
     @Override
