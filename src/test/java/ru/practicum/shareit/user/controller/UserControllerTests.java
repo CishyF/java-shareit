@@ -10,6 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.practicum.shareit.exception.EntityAlreadyExistsException;
+import ru.practicum.shareit.exception.EntityDoesNotExistException;
 import ru.practicum.shareit.exception.ErrorHandler;
 import ru.practicum.shareit.user.dto.UserDtoRequest;
 import ru.practicum.shareit.user.dto.UserDtoResponse;
@@ -130,6 +132,17 @@ public class UserControllerTests {
     }
 
     @Test
+    void shouldThrowIfUserDoesNotExist() throws Exception {
+        when(mockUserService.findById(10))
+                .thenThrow(EntityDoesNotExistException.class);
+
+        mockMvc.perform(get("/users/10")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void shouldPatchUpdateUser() throws Exception {
         lenient().when(mockUserService.update(1, dtoRequest))
                 .thenReturn(new User());
@@ -148,6 +161,35 @@ public class UserControllerTests {
     }
 
     @Test
+    void shouldHandleServerInternalError() throws Exception {
+        when(mockUserService.update(1, dtoRequest))
+                .thenThrow(NullPointerException.class);
+
+        mockMvc.perform(patch("/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(mapper.writeValueAsString(dtoRequest))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void shouldThrowIfUserWithEmailIsAlreadyExist() throws Exception {
+        UserDtoRequest duplicatedEmailDto = UserDtoRequest.builder()
+                .email("Duplicated@gmail.com")
+                .build();
+        when(mockUserService.update(1, duplicatedEmailDto))
+                .thenThrow(EntityAlreadyExistsException.class);
+
+        mockMvc.perform(patch("/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(mapper.writeValueAsString(duplicatedEmailDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
     void shouldDeleteUser() throws Exception {
         mockMvc.perform(delete("/users/1"))
                 .andExpect(status().isOk());
@@ -155,4 +197,11 @@ public class UserControllerTests {
         verify(mockUserService, times(1))
                 .delete(1);
     }
+
+    @Test
+    void shouldThrowIfArgumentIsAnotherType() throws Exception {
+        mockMvc.perform(delete("/users/a"))
+                .andExpect(status().isBadRequest());
+    }
+
 }

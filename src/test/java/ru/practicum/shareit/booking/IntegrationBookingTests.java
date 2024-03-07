@@ -7,16 +7,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
+import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.dto.RequestBookingStates;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.booking.util.BookingMapper;
+import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
+import ru.practicum.shareit.item.comment.entity.Comment;
 import ru.practicum.shareit.item.dto.ItemDtoRequest;
+import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.item.util.ItemMapper;
 import ru.practicum.shareit.user.dto.UserDtoRequest;
+import ru.practicum.shareit.user.dto.UserDtoResponse;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.util.UserMapper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,9 +44,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class IntegrationBookingTests {
 
+    final ItemMapper itemMapper;
+
     final ItemService itemService;
 
+    final UserMapper userMapper;
+
     final UserService userService;
+
+    final BookingMapper bookingMapper;
 
     final BookingService bookingService;
 
@@ -302,6 +316,45 @@ public class IntegrationBookingTests {
         );
 
         assertEquals(expectedBooking, actualBooking);
+    }
+
+    @Test
+    void shouldCreateComment() throws InterruptedException {
+        Comment expectedComment = Comment.builder()
+                .id(1)
+                .text("Карандаш отличный!")
+                .author(expectedBookers.get(0))
+                .item(expectedItems.get(2))
+                .createdAt(LocalDateTime.now().plusSeconds(2))
+                .build();
+        CommentDtoRequest commentDtoRequest = CommentDtoRequest.builder()
+                .text("Карандаш отличный!")
+                .build();
+
+        Thread.sleep(1000L);
+        bookingService.update(expectedBookings.get(2).getId(), true, expectedOwners.get(0).getId());
+        Comment actualComment = itemService.createComment(commentDtoRequest, expectedItems.get(2).getId(), expectedBookers.get(0).getId());
+
+        assertEquals(expectedComment, actualComment);
+    }
+
+    @Test
+    void shouldMakeBookingDtoResponseCorrectly() {
+        Booking booking1 = expectedBookings.get(0);
+        ItemDtoResponse expectedItemDtoResponse = itemMapper.itemToDtoResponse(booking1.getItem());
+        UserDtoResponse expectedBookerDtoResponse = userMapper.userToDtoResponse(booking1.getBooker());
+        BookingDtoResponse expectedBookingDtoResponse = BookingDtoResponse.builder()
+                .id(booking1.getId())
+                .item(expectedItemDtoResponse)
+                .booker(expectedBookerDtoResponse)
+                .status(booking1.getStatus())
+                .start(booking1.getStart())
+                .end(booking1.getEnd())
+                .build();
+
+        BookingDtoResponse actualBookingDtoResponse = bookingMapper.bookingToDtoResponse(booking1);
+
+        assertEquals(expectedBookingDtoResponse, actualBookingDtoResponse);
     }
 
 }

@@ -156,7 +156,7 @@ public class BookingControllerTests {
         when(mockBookingMapper.bookingsToDtoResponses(any()))
                 .thenReturn(List.of(dtoResponse));
 
-        mockMvc.perform(get("/bookings")
+        mockMvc.perform(get("/bookings/owner")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .accept(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1))

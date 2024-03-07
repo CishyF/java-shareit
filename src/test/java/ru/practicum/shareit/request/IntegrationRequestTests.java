@@ -7,9 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.item.dto.ItemDtoResponse;
+import ru.practicum.shareit.item.util.ItemMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDtoRequest;
+import ru.practicum.shareit.request.dto.ItemRequestDtoResponse;
 import ru.practicum.shareit.request.entity.ItemRequest;
 import ru.practicum.shareit.request.service.ItemRequestService;
+import ru.practicum.shareit.request.util.ItemRequestMapper;
 import ru.practicum.shareit.user.dto.UserDtoRequest;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -28,6 +32,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class IntegrationRequestTests {
 
     final UserService userService;
+
+    final ItemMapper itemMapper;
+
+    final ItemRequestMapper requestMapper;
 
     final ItemRequestService requestService;
 
@@ -89,4 +97,21 @@ public class IntegrationRequestTests {
         assertEquals(expectedRequestsForRequestor1, actualRequestsForRequestor1);
         assertEquals(expectedRequestsForRequestor2, actualRequestsForRequestor2);
     }
+
+    @Test
+    void shouldMakeRequestDtoResponseCorrectly() {
+        ItemRequest request1 = expectedRequests.get(0);
+        List<ItemDtoResponse> itemDtoResponses = itemMapper.itemsToDtoResponses(request1.getItems());
+        ItemRequestDtoResponse expectedRequestDtoResponse = ItemRequestDtoResponse.builder()
+                .id(request1.getId())
+                .description(request1.getDescription())
+                .created(request1.getCreated())
+                .items(itemDtoResponses)
+                .build();
+
+        ItemRequestDtoResponse actualRequestDtoResponse = requestMapper.itemRequestToResponseDto(request1);
+
+        assertEquals(expectedRequestDtoResponse, actualRequestDtoResponse);
+    }
+
 }

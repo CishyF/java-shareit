@@ -10,17 +10,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.practicum.shareit.exception.AccessException;
 import ru.practicum.shareit.exception.ErrorHandler;
 import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
 import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
 import ru.practicum.shareit.item.comment.entity.Comment;
-import ru.practicum.shareit.item.comment.util.CommentMapper;
+import ru.practicum.shareit.item.comment.util.CommentMapperImpl;
 import ru.practicum.shareit.item.dto.ItemDtoRequest;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.dto.LongItemDtoResponse;
 import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.item.util.ItemMapper;
+import ru.practicum.shareit.item.util.ItemMapperImpl;
+import ru.practicum.shareit.request.entity.ItemRequest;
+import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.nio.charset.StandardCharsets;
@@ -43,13 +46,13 @@ public class ItemControllerTests {
     ItemService mockItemService;
 
     @Mock
-    ItemMapper mockItemMapper;
+    ItemMapperImpl mockItemMapper;
 
     @Mock
     UserService mockUserService;
 
     @Mock
-    CommentMapper mockCommentMapper;
+    CommentMapperImpl mockCommentMapper;
 
     @InjectMocks
     ItemController itemController;
@@ -77,7 +80,7 @@ public class ItemControllerTests {
                 .text("Действительно роскошная!")
                 .build();
         itemDtoRequest = ItemDtoRequest.builder()
-                .requestId(null)
+                .requestId(1)
                 .name("Кастрюля")
                 .description("Роскошная")
                 .available(Boolean.TRUE)
@@ -90,7 +93,7 @@ public class ItemControllerTests {
                 .build();
         itemDtoResponse = ItemDtoResponse.builder()
                 .id(1)
-                .requestId(null)
+                .requestId(1)
                 .name("Кастрюля")
                 .description("Роскошная")
                 .available(Boolean.TRUE)
@@ -108,10 +111,18 @@ public class ItemControllerTests {
 
     @Test
     void shouldCreateItem() throws Exception {
+        Item item = Item.builder()
+                .id(itemDtoResponse.getId())
+                .name(itemDtoResponse.getName())
+                .description(itemDtoResponse.getDescription())
+                .owner(User.builder().id(itemDtoResponse.getId()).build())
+                .available(itemDtoResponse.getAvailable())
+                .request(ItemRequest.builder().id(itemDtoResponse.getId()).build())
+                .build();
         lenient().when(mockItemService.create(itemDtoRequest, 1))
-                .thenReturn(new Item());
-        when(mockItemMapper.itemToDtoResponse(any()))
-                .thenReturn(itemDtoResponse);
+                .thenReturn(item);
+        when(mockItemMapper.itemToDtoResponse(item))
+                .thenCallRealMethod();
 
         mockMvc.perform(post("/items")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -150,10 +161,16 @@ public class ItemControllerTests {
 
     @Test
     void shouldCreateComment() throws Exception {
-        lenient().when(mockItemService.createComment(commentDtoRequest, 1, 2))
-                .thenReturn(new Comment());
-        when(mockCommentMapper.commentToDtoResponse(any()))
-                .thenReturn(commentDtoResponse);
+        Comment comment = Comment.builder()
+                        .id(1)
+                        .text("Действительно роскошная!")
+                        .author(User.builder().name("Alex").build())
+                        .createdAt(commentDtoResponse.getCreated())
+                        .build();
+        when(mockItemService.createComment(commentDtoRequest, 1, 2))
+                .thenReturn(comment);
+        when(mockCommentMapper.commentToDtoResponse(comment))
+                .thenCallRealMethod();
 
         mockMvc.perform(post("/items/1/comment")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -265,4 +282,19 @@ public class ItemControllerTests {
                 .andExpect(jsonPath("$.description", is(itemDtoResponse.getDescription())))
                 .andExpect(jsonPath("$.available", is(itemDtoResponse.getAvailable()), Boolean.class));
     }
+
+    @Test
+    void shouldThrowIfUserThatPatchUpdatingIsNotOwner() throws Exception {
+        when(mockItemService.update(itemDtoRequest, 1, 2))
+                .thenThrow(new AccessException("error message"));
+
+        mockMvc.perform(patch("/items/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(mapper.writeValueAsString(itemDtoRequest))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 2))
+                .andExpect(status().isForbidden());
+    }
+
 }
