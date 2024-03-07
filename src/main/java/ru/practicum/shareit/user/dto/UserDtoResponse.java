@@ -1,8 +1,14 @@
 package ru.practicum.shareit.user.dto;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@Builder
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDtoResponse {
 
     private Integer id;
