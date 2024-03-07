@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +23,8 @@ import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.util.ItemMapper;
 import ru.practicum.shareit.item.util.ItemPatchUpdater;
+import ru.practicum.shareit.request.entity.ItemRequest;
+import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
 
     private final UserService userService;
+    private final ItemRequestService requestService;
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
@@ -48,7 +50,15 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item create(ItemDtoRequest itemDto, int ownerId) {
         User owner = userService.findById(ownerId);
-        Item item = itemMapper.dtoRequestToItem(itemDto, owner);
+        Integer requestId = itemDto.getRequestId();
+        Item item;
+        if (requestId == null) {
+            item = itemMapper.dtoRequestToItem(itemDto, owner, null);
+        } else {
+            ItemRequest request = requestService.findById(requestId);
+            item = itemMapper.dtoRequestToItem(itemDto, owner, request);
+            request.addItem(item);
+        }
         return itemRepository.save(item);
     }
 
@@ -59,8 +69,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<LongItemDtoResponse> findLongItemDtosOfUser(int ownerId) {
-        return findItemsOfUser(ownerId).stream()
+    public List<LongItemDtoResponse> findLongItemDtosOfUser(int ownerId, int from, int size) {
+        final User owner = userService.findById(ownerId);
+        final int page = getPage(from, size);
+        final PageRequest pageRequest = PageRequest.of(page, size);
+        return itemRepository.findItemsByOwnerOrderById(owner, pageRequest).stream()
                 .map(item -> findLongItemDtoById(item.getId(), ownerId))
                 .collect(Collectors.toList());
     }
@@ -98,17 +111,20 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> findItemsContainingText(String text) {
+    public List<Item> findItemsContainingText(String text, int from, int size) {
         if (text == null || text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemRepository.findAll().stream()
-                .filter(
-                        item -> (StringUtils.containsIgnoreCase(item.getName(), text) ||
-                                StringUtils.containsIgnoreCase(item.getDescription(), text)) &&
-                                item.getAvailable()
-                )
-                .collect(Collectors.toList());
+        final int page = getPage(from, size);
+        final PageRequest pageRequest = PageRequest.of(page, size);
+        return itemRepository.findItemsContainingTextAndAvailable(text, pageRequest).getContent();
+    }
+
+    private int getPage(int fromElement, int size) {
+        if (fromElement < 0 || size < 1) {
+            throw new IllegalArgumentException("Размер или элемент, с которого необходимо вернуть вещи, не должны быть меньше нуля");
+        }
+        return fromElement / size;
     }
 
     @Override
@@ -119,8 +135,7 @@ public class ItemServiceImpl implements ItemService {
             throw new AccessException("Попытка обновить предмет, принадлежащий другому пользователю");
         }
         itemPatchUpdater.updateItem(item, dto);
-        itemRepository.save(item);
-        return item;
+        return itemRepository.save(item);
     }
 
     private boolean isOwner(Item item, int ownerId) {

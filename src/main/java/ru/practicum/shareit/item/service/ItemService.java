@@ -14,13 +14,13 @@ public interface ItemService {
 
     List<Item> findItemsOfUser(int ownerId);
 
-    List<LongItemDtoResponse> findLongItemDtosOfUser(int ownerId);
+    List<LongItemDtoResponse> findLongItemDtosOfUser(int ownerId, int from, int size);
 
     Item findById(int id);
 
     LongItemDtoResponse findLongItemDtoById(int id, int userId);
 
-    List<Item> findItemsContainingText(String text);
+    List<Item> findItemsContainingText(String text, int from, int size);
 
     Item update(ItemDtoRequest dto, int id, int ownerId);
 

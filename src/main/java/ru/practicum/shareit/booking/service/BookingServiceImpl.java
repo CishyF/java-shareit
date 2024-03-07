@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
@@ -51,43 +52,50 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> findBookingsOfBookerItemsByState(int bookerId, RequestBookingStates state) {
-        List<Item> itemsOfBooker = itemService.findItemsOfUser(bookerId);
+    public List<Booking> findBookingsOfItemsOwnerByState(int itemsOwnerId, RequestBookingStates state, int from, int size) {
+        List<Item> items = itemService.findItemsOfUser(itemsOwnerId);
         final LocalDateTime now = LocalDateTime.now();
+        final int page = getPage(from, size);
+        final PageRequest pageRequest = PageRequest.of(page, size, ORDER_BY_START_DESC);
         switch (state) {
             case ALL:
-                return bookingRepository.findBookingsByItemIn(itemsOfBooker, ORDER_BY_START_DESC);
+                return bookingRepository.findBookingsByItemIn(items, pageRequest).getContent();
             case CURRENT:
-                return bookingRepository.findCurrentBookingsByItemIn(itemsOfBooker, ORDER_BY_START_DESC);
+                return bookingRepository.findCurrentBookingsByItemIn(items, pageRequest).getContent();
             case PAST:
-                return bookingRepository.findBookingsByItemInAndEndIsBefore(itemsOfBooker, now, ORDER_BY_START_DESC);
+                return bookingRepository.findBookingsByItemInAndEndIsBefore(items, now, pageRequest).getContent();
             case FUTURE:
-                return bookingRepository.findBookingsByItemInAndStartIsAfter(itemsOfBooker, now, ORDER_BY_START_DESC);
+                return bookingRepository.findBookingsByItemInAndStartIsAfter(items, now, pageRequest).getContent();
         }
         BookingStatus waitingOrRejected = BookingStatus.valueOf(state.name());
-        return bookingRepository.findBookingsByItemInAndStatus(
-                itemsOfBooker, waitingOrRejected, ORDER_BY_START_DESC
-        );
+        return bookingRepository.findBookingsByItemInAndStatus(items, waitingOrRejected, pageRequest).getContent();
     }
 
     @Override
-    public List<Booking> findBookingsOfUserByState(int bookerId, RequestBookingStates state) {
+    public List<Booking> findBookingsOfUserByState(int bookerId, RequestBookingStates state, int from, int size) {
         User booker = userService.findById(bookerId);
         final LocalDateTime now = LocalDateTime.now();
+        final int page = getPage(from, size);
+        final PageRequest pageRequest = PageRequest.of(page, size, ORDER_BY_START_DESC);
         switch (state) {
             case ALL:
-                return bookingRepository.findBookingsByBooker(booker, ORDER_BY_START_DESC);
+                return bookingRepository.findBookingsByBooker(booker, pageRequest).getContent();
             case CURRENT:
-                return bookingRepository.findCurrentBookingsByBooker(booker, ORDER_BY_START_DESC);
+                return bookingRepository.findCurrentBookingsByBooker(booker, pageRequest).getContent();
             case PAST:
-                return bookingRepository.findBookingsByBookerAndEndIsBefore(booker, now, ORDER_BY_START_DESC);
+                return bookingRepository.findBookingsByBookerAndEndIsBefore(booker, now, pageRequest).getContent();
             case FUTURE:
-                return bookingRepository.findBookingsByBookerAndStartIsAfter(booker, now, ORDER_BY_START_DESC);
+                return bookingRepository.findBookingsByBookerAndStartIsAfter(booker, now, pageRequest).getContent();
         }
         BookingStatus waitingOrRejected = BookingStatus.valueOf(state.name());
-        return bookingRepository.findBookingsByBookerAndStatus(
-                booker, waitingOrRejected, ORDER_BY_START_DESC
-        );
+        return bookingRepository.findBookingsByBookerAndStatus(booker, waitingOrRejected, pageRequest).getContent();
+    }
+
+    private int getPage(int fromElement, int size) {
+        if (fromElement < 0 || size < 1) {
+            throw new IllegalArgumentException("Размер или элемент, с которого необходимо вернуть аренды, не должны быть меньше нуля");
+        }
+        return fromElement / size;
     }
 
     @Override

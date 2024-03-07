@@ -28,10 +28,14 @@ public class ItemController {
     private final CommentMapper commentMapper;
 
     @GetMapping
-    public Collection<LongItemDtoResponse> getItemsOfUser(@RequestHeader("X-Sharer-User-Id") int ownerId) {
-        log.info("Пришел GET-запрос /items без тела");
-        Collection<LongItemDtoResponse> itemsDto = itemService.findLongItemDtosOfUser(ownerId);
-        log.info("Ответ на GET-запрос /items с телом={}", itemsDto);
+    public Collection<LongItemDtoResponse> getItemsOfUser(
+            @RequestHeader("X-Sharer-User-Id") int ownerId,
+            @RequestParam(name = "from", required = false, defaultValue = "0") int from,
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size
+    ) {
+        log.info("Пришел GET-запрос /items?from={}&size={} без тела", from, size);
+        Collection<LongItemDtoResponse> itemsDto = itemService.findLongItemDtosOfUser(ownerId, from, size);
+        log.info("Ответ на GET-запрос /items?from={}&size={} с телом={}", from, size, itemsDto);
         return itemsDto;
     }
 
@@ -47,12 +51,16 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public Collection<ItemDtoResponse> getItemsContainingText(@RequestParam(value = "text", required = false) String text) {
-        log.info("Пришел GET-запрос /items/search?text={} без тела", text);
+    public Collection<ItemDtoResponse> getItemsContainingText(
+            @RequestParam(value = "text", required = false) String text,
+            @RequestParam(name = "from", required = false, defaultValue = "0") int from,
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size
+    ) {
+        log.info("Пришел GET-запрос /items/search?text={}&from={}&size={} без тела", text, from, size);
         Collection<ItemDtoResponse> itemDtos = itemMapper.itemsToDtoResponses(
-                itemService.findItemsContainingText(text)
+                itemService.findItemsContainingText(text, from, size)
         );
-        log.info("Ответ на GET-запрос /items/search?text={} с телом={}", text, itemDtos);
+        log.info("Ответ на GET-запрос /items/search?text={}&from={}&size={} с телом={}", text, from, size, itemDtos);
         return itemDtos;
     }
 
