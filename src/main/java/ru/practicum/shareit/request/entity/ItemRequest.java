@@ -13,6 +13,9 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ItemRequest {
 
     @Id
@@ -26,15 +29,16 @@ public class ItemRequest {
     @ToString.Exclude
     private User requestor;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "item_request",
-            joinColumns = @JoinColumn(name = "request_id"),
-            inverseJoinColumns = @JoinColumn(name = "item_id"))
+    @OneToMany(fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<Item> items;
 
     @Column(name = "created_at")
     private LocalDateTime created;
+
+    public void addItem(Item item) {
+        items.add(item);
+    }
 
     @Override
     public boolean equals(Object o) {
