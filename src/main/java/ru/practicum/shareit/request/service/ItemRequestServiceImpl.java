@@ -8,7 +8,7 @@ import ru.practicum.shareit.exception.EntityDoesNotExistException;
 import ru.practicum.shareit.request.dto.ItemRequestDtoRequest;
 import ru.practicum.shareit.request.entity.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
-import ru.practicum.shareit.request.util.ItemRequestMapper;
+import ru.practicum.shareit.request.mapping.ItemRequestMapper;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -18,10 +18,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemRequestServiceImpl implements ItemRequestService {
 
+    private static final Sort ORDER_BY_CREATED_DESC = Sort.by(Sort.Direction.DESC, "created");
     private final ItemRequestMapper requestMapper;
     private final ItemRequestRepository requestRepository;
     private final UserService userService;
-    private static final Sort ORDER_BY_CREATED_DESC = Sort.by(Sort.Direction.DESC, "created");
 
     @Override
     public ItemRequest create(int requestorId, ItemRequestDtoRequest dto) {

@@ -9,7 +9,7 @@ import ru.practicum.shareit.booking.dto.RequestBookingStates;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.booking.util.BookingMapper;
+import ru.practicum.shareit.booking.mapping.BookingMapper;
 import ru.practicum.shareit.exception.BookingByOwnerOfItemException;
 import ru.practicum.shareit.exception.EntityDoesNotExistException;
 import ru.practicum.shareit.exception.EntityIsNotAvailableException;
@@ -25,11 +25,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
+    private static final Sort ORDER_BY_START_DESC = Sort.by(Sort.Direction.DESC, "start");
     private final UserService userService;
     private final ItemService itemService;
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
-    private static final Sort ORDER_BY_START_DESC = Sort.by(Sort.Direction.DESC, "start");
 
     @Override
     public Booking create(BookingDtoRequest dto, int bookerId) {
