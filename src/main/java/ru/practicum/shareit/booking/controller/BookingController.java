@@ -7,7 +7,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.dto.RequestBookingStates;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.booking.util.BookingMapper;
+import ru.practicum.shareit.booking.mapping.BookingMapper;
 
 import javax.validation.Valid;
 import java.util.Collection;

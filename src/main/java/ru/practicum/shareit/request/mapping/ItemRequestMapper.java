@@ -1,7 +1,7 @@
-package ru.practicum.shareit.request.util;
+package ru.practicum.shareit.request.mapping;
 
 import org.mapstruct.Mapper;
-import ru.practicum.shareit.item.util.ItemMapper;
+import ru.practicum.shareit.item.mapping.ItemMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDtoRequest;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResponse;
 import ru.practicum.shareit.request.entity.ItemRequest;

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDtoRequest;
 import ru.practicum.shareit.user.dto.UserDtoResponse;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.user.util.UserMapper;
+import ru.practicum.shareit.user.mapping.UserMapper;
 
 import javax.validation.Valid;
 import java.util.Collection;

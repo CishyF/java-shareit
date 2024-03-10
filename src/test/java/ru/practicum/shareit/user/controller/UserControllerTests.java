@@ -17,7 +17,7 @@ import ru.practicum.shareit.user.dto.UserDtoRequest;
 import ru.practicum.shareit.user.dto.UserDtoResponse;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.user.util.UserMapper;
+import ru.practicum.shareit.user.mapping.UserMapper;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;

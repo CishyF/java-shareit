@@ -15,7 +15,7 @@ import ru.practicum.shareit.booking.dto.RequestBookingStates;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.booking.util.BookingMapper;
+import ru.practicum.shareit.booking.mapping.BookingMapper;
 import ru.practicum.shareit.exception.BookingByOwnerOfItemException;
 import ru.practicum.shareit.exception.EntityDoesNotExistException;
 import ru.practicum.shareit.exception.EntityIsNotAvailableException;

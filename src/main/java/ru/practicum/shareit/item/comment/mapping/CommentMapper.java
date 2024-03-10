@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.comment.util;
+package ru.practicum.shareit.item.comment.mapping;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

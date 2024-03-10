@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.util;
+package ru.practicum.shareit.item.mapping;
 
 import org.mapstruct.*;
 import ru.practicum.shareit.booking.dto.ShortBookingDtoResponse;

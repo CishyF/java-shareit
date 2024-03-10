@@ -5,12 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.comment.dto.CommentDtoRequest;
 import ru.practicum.shareit.item.comment.dto.CommentDtoResponse;
-import ru.practicum.shareit.item.comment.util.CommentMapper;
+import ru.practicum.shareit.item.comment.mapping.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDtoRequest;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.dto.LongItemDtoResponse;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.item.util.ItemMapper;
+import ru.practicum.shareit.item.mapping.ItemMapper;
 
 import javax.validation.Valid;
 import java.util.Collection;

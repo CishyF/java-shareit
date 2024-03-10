@@ -17,7 +17,7 @@ import ru.practicum.shareit.booking.dto.RequestBookingStates;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.booking.util.BookingMapper;
+import ru.practicum.shareit.booking.mapping.BookingMapper;
 import ru.practicum.shareit.exception.ErrorHandler;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.user.dto.UserDtoResponse;

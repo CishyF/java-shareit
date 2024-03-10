@@ -13,7 +13,7 @@ import ru.practicum.shareit.exception.EntityDoesNotExistException;
 import ru.practicum.shareit.request.dto.ItemRequestDtoRequest;
 import ru.practicum.shareit.request.entity.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
-import ru.practicum.shareit.request.util.ItemRequestMapper;
+import ru.practicum.shareit.request.mapping.ItemRequestMapper;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.service.UserService;
 
