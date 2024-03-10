@@ -11,7 +11,6 @@ import ru.practicum.shareit.item.dto.ItemDtoResponse;
 import ru.practicum.shareit.item.dto.LongItemDtoResponse;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.util.ItemMapper;
-import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -24,7 +23,6 @@ public class ItemController {
 
     private final ItemService itemService;
     private final ItemMapper itemMapper;
-    private final UserService userService;
     private final CommentMapper commentMapper;
 
     @GetMapping
@@ -67,7 +65,6 @@ public class ItemController {
     @PostMapping
     public ItemDtoResponse createItem(@RequestHeader("X-Sharer-User-Id") int ownerId, @RequestBody @Valid ItemDtoRequest dto) {
         log.info("Пришел POST-запрос /items с телом={}", dto);
-        userService.findById(ownerId);
         ItemDtoResponse savedDto = itemMapper.itemToDtoResponse(itemService.create(dto, ownerId));
         log.info("Ответ на POST-запрос /items с телом={}", savedDto);
         return savedDto;

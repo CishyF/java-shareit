@@ -7,7 +7,6 @@ import ru.practicum.shareit.request.dto.ItemRequestDtoRequest;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResponse;
 import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.request.util.ItemRequestMapper;
-import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -19,7 +18,6 @@ import java.util.List;
 public class ItemRequestController {
 
     private final ItemRequestService requestService;
-    private final UserService userService;
     private final ItemRequestMapper requestMapper;
 
     @GetMapping
@@ -47,9 +45,9 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestDtoResponse getRequest(@RequestHeader("X-Sharer-User-Id") int userId, @PathVariable int requestId) {
+    public ItemRequestDtoResponse getRequest(@RequestHeader("X-Sharer-User-Id") int requestorId, @PathVariable int requestId) {
         log.info("Пришел GET-запрос /requests/{requestId={}} без тела", requestId);
-        userService.findById(userId);
+        requestService.validateRequestor(requestorId);
         ItemRequestDtoResponse dto = requestMapper.itemRequestToResponseDto(requestService.findById(requestId));
         log.info("Ответ на GET-запрос /requests/{requestId={}} с телом={}", requestId, dto);
         return dto;

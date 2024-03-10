@@ -136,9 +136,6 @@ public class ItemControllerTests {
                 .andExpect(jsonPath("$.name", is(itemDtoResponse.getName())))
                 .andExpect(jsonPath("$.description", is(itemDtoResponse.getDescription())))
                 .andExpect(jsonPath("$.available", is(itemDtoResponse.getAvailable()), Boolean.class));
-
-        verify(mockUserService, times(1))
-                .findById(1);
     }
 
     @Test

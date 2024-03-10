@@ -14,4 +14,6 @@ public interface ItemRequestService {
     List<ItemRequest> findRequestsOfOtherUsers(int userId, int from, int size);
 
     ItemRequest findById(int requestId);
+
+    void validateRequestor(int requestorId);
 }

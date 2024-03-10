@@ -56,4 +56,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return requestRepository.findById(requestId)
                 .orElseThrow(() -> new EntityDoesNotExistException("Попытка получения несуществующего запроса"));
     }
+
+    @Override
+    public void validateRequestor(int requestorId) {
+        try {
+            userService.findById(requestorId);
+        } catch (EntityDoesNotExistException e) {
+            throw new EntityDoesNotExistException("Попытка получения запроса несуществующего пользователя");
+        }
+    }
 }

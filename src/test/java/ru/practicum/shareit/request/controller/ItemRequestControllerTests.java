@@ -173,9 +173,6 @@ public class ItemRequestControllerTests {
                 .andExpect(jsonPath("$.created", is(dtoResponse.getCreated().format(ofPattern("yyyy-MM-dd'T'HH:mm:ss")))))
                 .andExpect(jsonPath("$.description", is(dtoResponse.getDescription())))
                 .andExpect(jsonPath("$.items", is(dtoResponse.getItems()), List.class));
-
-        verify(mockUserService, times(1))
-                .findById(1);
     }
 
 }
