@@ -10,9 +10,9 @@ public interface BookingService {
 
     Booking create(BookingDtoRequest dto, int bookerId);
 
-    List<Booking> findBookingsOfBookerItemsByState(int bookerId, RequestBookingStates state);
+    List<Booking> findBookingsOfItemsOwnerByState(int itemsOwnerId, RequestBookingStates state, int from, int size);
 
-    List<Booking> findBookingsOfUserByState(int bookerId, RequestBookingStates state);
+    List<Booking> findBookingsOfUserByState(int bookerId, RequestBookingStates state, int from, int size);
 
     Booking findById(int id, int userId);
 

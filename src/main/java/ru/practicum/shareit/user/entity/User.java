@@ -1,8 +1,6 @@
 package ru.practicum.shareit.user.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -11,6 +9,9 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id

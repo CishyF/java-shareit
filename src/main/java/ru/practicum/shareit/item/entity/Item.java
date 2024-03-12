@@ -1,8 +1,7 @@
 package ru.practicum.shareit.item.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import ru.practicum.shareit.request.entity.ItemRequest;
 import ru.practicum.shareit.user.entity.User;
 
 import javax.persistence.*;
@@ -12,6 +11,9 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Item {
 
     @Id
@@ -30,6 +32,10 @@ public class Item {
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     private User owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private ItemRequest request;
 
     @Override
     public boolean equals(Object o) {

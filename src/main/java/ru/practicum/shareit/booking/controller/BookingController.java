@@ -7,7 +7,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.dto.RequestBookingStates;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.booking.util.BookingMapper;
+import ru.practicum.shareit.booking.mapping.BookingMapper;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -24,26 +24,30 @@ public class BookingController {
     @GetMapping
     public Collection<BookingDtoResponse> getBookingsOfUserByState(
             @RequestHeader("X-Sharer-User-Id") int bookerId,
-            @RequestParam(value = "state", required = false, defaultValue = "ALL") RequestBookingStates state
+            @RequestParam(value = "state", required = false, defaultValue = "ALL") RequestBookingStates state,
+            @RequestParam(name = "from", required = false, defaultValue = "0") int from,
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size
     ) {
-        log.info("Пришел GET-запрос /bookings?state={} без тела", state);
+        log.info("Пришел GET-запрос /bookings?state={}&from={}&size={} без тела", state, from, size);
         Collection<BookingDtoResponse> bookings = bookingMapper.bookingsToDtoResponses(
-                bookingService.findBookingsOfUserByState(bookerId, state)
+                bookingService.findBookingsOfUserByState(bookerId, state, from, size)
         );
-        log.info("Ответ на GET-запрос /bookings?state={} с телом={}", state, bookings);
+        log.info("Ответ на GET-запрос /bookings?state={}&from={}&size={} с телом={}", state, from, size, bookings);
         return bookings;
     }
 
     @GetMapping("/owner")
-    public Collection<BookingDtoResponse> getBookingsOfBookerItemsByState(
-            @RequestHeader("X-Sharer-User-Id") int bookerId,
-            @RequestParam(value = "state", required = false, defaultValue = "ALL") RequestBookingStates state
+    public Collection<BookingDtoResponse> getBookingsOfItemsOwnerByState(
+            @RequestHeader("X-Sharer-User-Id") int itemsOwnerId,
+            @RequestParam(value = "state", required = false, defaultValue = "ALL") RequestBookingStates state,
+            @RequestParam(name = "from", required = false, defaultValue = "0") int from,
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size
     ) {
-        log.info("Пришел GET-запрос /bookings/owner?state={} без тела", state);
+        log.info("Пришел GET-запрос /bookings/owner?state={}&from={}&size={} без тела", state, from, size);
         Collection<BookingDtoResponse> bookings = bookingMapper.bookingsToDtoResponses(
-                bookingService.findBookingsOfBookerItemsByState(bookerId, state)
+                bookingService.findBookingsOfItemsOwnerByState(itemsOwnerId, state, from, size)
         );
-        log.info("Ответ на GET-запрос /bookings/owner?state={} с телом={}", state, bookings);
+        log.info("Ответ на GET-запрос /bookings/owner?state={}&from={}&size={} с телом={}", state, from, size, bookings);
         return bookings;
     }
 

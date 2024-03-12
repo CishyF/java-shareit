@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.util;
+package ru.practicum.shareit.booking.mapping;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -8,9 +8,9 @@ import ru.practicum.shareit.booking.dto.ShortBookingDtoResponse;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.item.entity.Item;
-import ru.practicum.shareit.item.util.ItemMapper;
+import ru.practicum.shareit.item.mapping.ItemMapper;
 import ru.practicum.shareit.user.entity.User;
-import ru.practicum.shareit.user.util.UserMapper;
+import ru.practicum.shareit.user.mapping.UserMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;

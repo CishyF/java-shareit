@@ -1,8 +1,6 @@
 package ru.practicum.shareit.item.comment.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.user.entity.User;
 
@@ -14,6 +12,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Comment {
 
     @Id

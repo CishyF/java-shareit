@@ -7,8 +7,8 @@ import ru.practicum.shareit.exception.EntityDoesNotExistException;
 import ru.practicum.shareit.user.dto.UserDtoRequest;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.repository.UserRepository;
-import ru.practicum.shareit.user.util.UserMapper;
-import ru.practicum.shareit.user.util.UserPatchUpdater;
+import ru.practicum.shareit.user.mapping.UserMapper;
+import ru.practicum.shareit.user.mapping.UserPatchUpdater;
 
 import java.util.List;
 
@@ -47,8 +47,7 @@ public class UserServiceImpl implements UserService {
             throw new EntityAlreadyExistsException("Попытка присвоить пользователю уже использованную почту");
         }
         userPatchUpdater.updateUser(user, dto);
-        userRepository.save(user);
-        return user;
+        return userRepository.save(user);
     }
 
     @Override
