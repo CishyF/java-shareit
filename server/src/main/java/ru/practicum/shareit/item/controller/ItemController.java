@@ -31,15 +31,21 @@ public class ItemController {
             @RequestParam int from,
             @RequestParam int size
     ) {
-        return itemService.findLongItemDtosOfUser(ownerId, from, size);
+        log.info("Пришел GET-запрос /items?from={}&size={}, userId={} без тела", from, size, ownerId);
+        Collection<LongItemDtoResponse> itemsDto = itemService.findLongItemDtosOfUser(ownerId, from, size);
+        log.info("Ответ на GET-запрос /items?from={}&size={}, userId={} с телом={}", from, size, ownerId, itemsDto);
+        return itemsDto;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{itemId}")
     public LongItemDtoResponse getItemById(
             @RequestHeader("X-Sharer-User-Id") int userId,
-            @PathVariable int id
+            @PathVariable int itemId
     ) {
-        return itemService.findLongItemDtoById(id, userId);
+        log.info("Пришел GET-запрос /items/{id={}}, userId={} без тела", itemId, userId);
+        LongItemDtoResponse itemDto = itemService.findLongItemDtoById(itemId, userId);
+        log.info("Ответ на GET-запрос /items/{id={}}, userId={} с телом={}", itemId, userId, itemDto);
+        return itemDto;
     }
 
     @GetMapping("/search")
@@ -48,23 +54,32 @@ public class ItemController {
             @RequestParam int from,
             @RequestParam int size
     ) {
-        return itemMapper.itemsToDtoResponses(
+        log.info("Пришел GET-запрос /items/search?text={}&from={}&size={} без тела", text, from, size);
+        Collection<ItemDtoResponse> itemDtos = itemMapper.itemsToDtoResponses(
                 itemService.findItemsContainingText(text, from, size)
         );
+        log.info("Ответ на GET-запрос /items/search?text={}&from={}&size={} с телом={}", text, from, size, itemDtos);
+        return itemDtos;
     }
 
     @PostMapping
     public ItemDtoResponse createItem(@RequestHeader("X-Sharer-User-Id") int ownerId, @RequestBody @Valid ItemDtoRequest dto) {
-        return itemMapper.itemToDtoResponse(itemService.create(dto, ownerId));
+        log.info("Пришел POST-запрос /items, userId={} с телом={}", ownerId, dto);
+        ItemDtoResponse savedDto = itemMapper.itemToDtoResponse(itemService.create(dto, ownerId));
+        log.info("Ответ на POST-запрос /items, userId={} с телом={}", ownerId, savedDto);
+        return savedDto;
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{itemId}")
     public ItemDtoResponse patchItem(
             @RequestHeader("X-Sharer-User-Id") int ownerId,
-            @PathVariable int id,
+            @PathVariable int itemId,
             @RequestBody ItemDtoRequest dto
     ) {
-        return itemMapper.itemToDtoResponse(itemService.update(dto, id, ownerId));
+        log.info("Пришел PATCH-запрос /items/{id={}}, userId={} с телом={}", itemId, ownerId, dto);
+        ItemDtoResponse updatedDto = itemMapper.itemToDtoResponse(itemService.update(dto, itemId, ownerId));
+        log.info("Ответ на PATCH-запрос /items/{id={}}, userId={} с телом={}", itemId, ownerId, updatedDto);
+        return updatedDto;
     }
 
     @PostMapping("/{itemId}/comment")
@@ -73,6 +88,9 @@ public class ItemController {
             @PathVariable int itemId,
             @RequestBody CommentDtoRequest dto
     ) {
-        return commentMapper.commentToDtoResponse(itemService.createComment(dto, itemId, authorId));
+        log.info("Пришел POST-запрос /items/{itemId={}}/comment, userId={} с телом={}", itemId, authorId, dto);
+        CommentDtoResponse savedDto = commentMapper.commentToDtoResponse(itemService.createComment(dto, itemId, authorId));
+        log.info("Ответ на POST-запрос /items/{itemId={}}/comment, userId={} с телом={}", itemId, authorId, savedDto);
+        return savedDto;
     }
 }
