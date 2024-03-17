@@ -8,7 +8,6 @@ services:
     volumes:
       - /var/lib/postgresql/data/
     environment:
-      - TZ=Europe/Moscow
       - POSTGRES_DB=shareit
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
@@ -20,7 +19,6 @@ services:
     depends_on:
       - db
     environment:
-      - TZ=Europe/Moscow
       - SPRING_PROFILES_ACTIVE=dev
       - DB_HOST=db
       - DB_NAME=shareit
